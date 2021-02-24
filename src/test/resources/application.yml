@@ -1,0 +1,66 @@
+
+
+pac4j-x:
+  host: http://oidc.example.com:8080
+  callbackUrl: ${pac4j-x.host}/callback
+  client:
+    oidcs:
+      - pac4jId: oidc-01
+        serverHost: http://localhost:8180
+        clientId: cjp-client01
+        secret: 6b7c75fe-81f9-4216-9f9e-ee11862639ee
+        discoveryURI: ${pac4j-x.client.oidcs[0].serverHost}/auth/realms/realm001/.well-known/openid-configuration
+        scope: openid profile address2 phone
+        preferredJwsAlgorithm: com.nimbusds.jose.JWSAlgorithm.RS256
+      - pac4jId: oidc-02
+        serverHost: http://localhost:8180
+        clientId: cjp-client01
+        secret: 6b7c75fe-81f9-4216-9f9e-ee11862639ee
+        discoveryURI: ${pac4j-x.client.oidcs[1].serverHost}/auth/realms/realm001/.well-known/openid-configuration
+        #        callbackUrl: ${pac4j.client.host}/callback
+        scope: openid profile address2 phone
+        preferredJwsAlgorithm: com.nimbusds.jose.JWSAlgorithm.RS256
+    weChatWorks:
+      - pac4jId: test-wework-01 # 唯一标识
+        #        name: 企业微信           # App 名称
+        corpId: wwae5cc7ae5dccae98
+        secret: fq24U42na4E1l6SNMHuE60pLnrTEJ1Yoe4NhRZh-b1g
+        agentId: 1000025
+        principalAttributeId: UserId
+        profileAttrs:
+          # 保留属性的配置，原属性包括企业微信返回的用户信息（UserId、DeviceId）及 UserProfileService获取的属性
+          # key: 原属性名，value：属性重命名
+          UserId: user_id
+          DeviceId: device_id
+
+
+
+
+cas-x:
+  authn:
+    # 启用cas-x的委托登录
+    enabled: true
+    qy_wx:
+      # 启用企业微信扫码登录
+      enabled: true
+      id: wwae5cc7ae5dccae98
+      secret: fq24U42na4E1l6SNMHuE60pLnrTEJ1Yoe4NhRZh-b1g
+      clientName: 企业微信
+      agentid: 1000025
+      principalAttributeId: UserId
+      profileAttrs:
+        # profile属性，即使不需要重命名，也务必在此声明一下
+        UserId: user_id
+        DeviceId: device_id
+
+      # 自建APP授权访问的服务
+      clients:
+        shop:
+          name: pet商店
+          url: http://shop.example.com
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    timeout: 3000s
